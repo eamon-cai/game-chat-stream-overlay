@@ -1,3 +1,16 @@
+"""
+This tool is used to create a TOP overlay that shows your streaming chat (Twitch, Kick) or anything
+
+on Top of your game so you can't lose what your viewers are Saying
+
+version: 0.0.1
+created: 13/04/2024
+by: Skander BOUDAWARA
+
+History of changes:
+- 13/04/2024: first creation
+"""
+
 import json
 import sys
 
@@ -42,7 +55,7 @@ class Overlay(QWidget):
         self.transparent_value: int = 50  # value of transparency of the window
 
         # load window configurations
-        self.loadWindowSize()
+        self.load_window_size()
 
         # setup window interface
         self.window_layout_interface(f"Overlay {self.id_window}")
@@ -112,7 +125,7 @@ class Overlay(QWidget):
         )
         # self.web_view.page().setUrlRequestInterceptor(lambda details: None)
 
-        self.setTransparentBackground(self.web_view)
+        self.set_transparent_background(self.web_view)
 
     def quit_button_layout(self) -> None:
         """
@@ -150,7 +163,7 @@ class Overlay(QWidget):
         )  # Set background color to transparent
         self.grip.setFixedSize(20, 20)  # Set grip size
 
-    def setTransparentBackground(self, web_view: any) -> None:
+    def set_transparent_background(self, web_view: any) -> None:
         """
         add transparency to the web page
 
@@ -182,7 +195,7 @@ class Overlay(QWidget):
         """
         if self.offset is not None:
             self.move(self.mapToGlobal(event.pos() - self.offset))
-            self.saveConfiguration()
+            self.save_configuration()
 
     def mouseReleaseEvent(self, event: any) -> None:
         """
@@ -236,7 +249,7 @@ class Overlay(QWidget):
         self.grip.move(
             self.width() - self.grip.width(), self.height() - self.grip.height()
         )
-        self.saveConfiguration()
+        self.save_configuration()
         
 
     def enterEvent(self, event):
@@ -279,7 +292,7 @@ class Overlay(QWidget):
         else:
             return ""
 
-    def saveConfiguration(self):
+    def save_configuration(self):
         """
         To save configuration in json file
 
@@ -304,7 +317,7 @@ class Overlay(QWidget):
         with open("config.json", "w") as file:
             json.dump(config_data, file, indent=4)
 
-    def loadWindowSize(self):
+    def load_window_size(self):
         # Load window size from config.json
         try:
             with open("config.json", "r") as file:
@@ -329,11 +342,18 @@ class Overlay(QWidget):
             self.y_pos = config_data[self.id_window]["y_pos"]
             self.width_value = config_data[self.id_window]["width"]
             self.height_value = config_data[self.id_window]["height"]
-            self.saveConfiguration()
+            self.save_configuration()
 
 
 class MainWindow(QWidget):
-    def __init__(self):
+    """
+    This class is the Main window to be run that has all the necessary configuration
+    
+    :param: None
+    
+    :returns: None
+    """
+    def __init__(self) -> None:
         super().__init__()
 
         self.setWindowTitle("URL Configuration")
@@ -343,6 +363,23 @@ class MainWindow(QWidget):
         self.slider_value_1 = 0
         self.slider_value_2 = 0
 
+        self.window_1_configuration()
+        self.window_2_configuration()
+
+        self.load_config()
+        # Save configuration
+        self.save_button()
+
+        self.setLayout(self.layout)
+
+    def window_1_configuration(self) -> None:
+        """
+        This method creates the first label, url input and the transparency slider
+        
+        :param: None
+        
+        :returns: None
+        """
         # Window 1 Config
         self.url_label_1 = QLabel("URL Window 1:")
         self.url_input_1 = QLineEdit()
@@ -357,7 +394,15 @@ class MainWindow(QWidget):
 
         self.transparency_slider_1.valueChanged.connect(self.set_transparency_1)
         self.layout.addWidget(self.transparency_slider_1)
-
+    
+    def window_2_configuration(self) -> None:
+        """
+        This method creates the seconds label, url input and the transparency slider
+        
+        :param: None
+        
+        :returns: None
+        """
         # Window 2 Config
         self.url_label_2 = QLabel("URL Window 2:")
         self.url_input_2 = QLineEdit()
@@ -373,27 +418,52 @@ class MainWindow(QWidget):
         self.transparency_slider_2.valueChanged.connect(self.set_transparency_2)
         self.layout.addWidget(self.transparency_slider_2)
 
-        self.load_config()
-        # Save configuration
+    def save_button(self) -> None:
+        """
+        This method creates the save button
+        
+        :param: None
+        
+        :returns: None
+        """
         self.load_chat_button = QPushButton("Save configuration & Open window(s)")
-        self.load_chat_button.clicked.connect(self.saveConfiguration)
+        self.load_chat_button.clicked.connect(self.open_windows)
         self.layout.addWidget(self.load_chat_button)
 
-        self.setLayout(self.layout)
-
-    def set_transparency_1(self):
+    def set_transparency_1(self) -> None:
+        """
+        This method updates the transparency 1
+        
+        :param: None
+        
+        :returns: None
+        """
         # Update transparency when slider value changes
         self.transparency_label_1.setText(
             f"Transparency: {self.transparency_slider_1.value()}%"
         )
 
-    def set_transparency_2(self):
+    def set_transparency_2(self) -> None:
+        """
+        This method updates the transparency 2
+        
+        :param: None
+        
+        :returns: None
+        """
         # Update transparency when slider value changes
         self.transparency_label_2.setText(
             f"Transparency: {self.transparency_slider_2.value()}%"
         )
 
-    def load_config(self):
+    def load_config(self) -> None:
+        """
+        This method loads configuration from the json file
+        
+        :param: None
+        
+        :returns: None
+        """
         config_data = {"0": {}, "1": {}}
         try:
             with open("config.json", "r") as config_file:
@@ -438,7 +508,14 @@ class MainWindow(QWidget):
         with open("config.json", "w") as file:
             json.dump(config_data, file, indent=4)
 
-    def saveConfiguration(self):
+    def save_configuration(self):
+        """
+        This method saves the configuration in the json file
+        
+        :param: None
+        
+        :returns: None
+        """
         # Save configuration to config.json
         if self.url_input_1.text() or self.url_input_2.text():
             try:
@@ -455,16 +532,25 @@ class MainWindow(QWidget):
                 QMessageBox.warning(self, "File Not Found", "Config file not found.")
             except Exception as e:
                 QMessageBox.warning(self, "Error", str(e))
-            finally:
-                if self.url_input_1.text():
-                    self.overlay1 = Overlay(0)
-                    self.overlay1.show()
-                if self.url_input_2.text():
-                    self.overlay2 = Overlay(1)
-                    self.overlay2.show()
-                self.hide()
         else:
             QMessageBox.warning(self, "URL not filled", "you must put a valid URL")
+    
+    def open_windows(self) -> None:
+        """
+        This Method opens the windows 1 & 2 if the URL exists
+        
+        :param: None
+        
+        :returns: None
+        """
+        self.save_configuration()
+        if self.url_input_1.text():
+            self.overlay1 = Overlay(0)
+            self.overlay1.show()
+        if self.url_input_2.text():
+            self.overlay2 = Overlay(1)
+            self.overlay2.show()
+        self.hide()
 
 
 if __name__ == "__main__":
