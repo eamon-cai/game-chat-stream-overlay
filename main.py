@@ -383,6 +383,7 @@ class MainWindow(QWidget):
         # Window 1 Config
         self.url_label_1 = QLabel("URL Window 1:")
         self.url_input_1 = QLineEdit()
+        self.url_input_1.setEchoMode(QLineEdit.Password)
         self.layout.addWidget(self.url_label_1)
         self.layout.addWidget(self.url_input_1)
 
@@ -406,6 +407,7 @@ class MainWindow(QWidget):
         # Window 2 Config
         self.url_label_2 = QLabel("URL Window 2:")
         self.url_input_2 = QLineEdit()
+        self.url_input_2.setEchoMode(QLineEdit.Password)
         self.layout.addWidget(self.url_label_2)
         self.layout.addWidget(self.url_input_2)
 
